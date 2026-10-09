@@ -1,0 +1,284 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NFTA OFFICIAL</title>
+<style>
+:root{color-scheme:dark;--bg:#061b16;--panel:#102b23;--line:#285344;--green:#79edb2;--text:#f2fff8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
+header{padding:20px 16px;border-bottom:1px solid var(--line)}
+h1{font-size:24px;margin:0}
+small,.muted{color:#a9c5b8}
+nav{display:flex;gap:7px;overflow-x:auto;padding:12px}
+button{cursor:pointer;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--panel);color:var(--text);font-size:15px}
+nav button.active,.primary{background:var(--green);color:#062218;font-weight:bold}
+main{max-width:850px;margin:auto;padding:12px 16px 35px}
+section{display:none}
+section.active{display:block}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+input,select,textarea{display:block;width:100%;padding:12px;margin:8px 0 14px;border-radius:9px;border:1px solid var(--line);background:#061c16;color:white;font-size:16px}
+label{display:block}
+.match{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 0;border-bottom:1px solid var(--line)}
+.match span{flex:1;text-align:center;overflow-wrap:anywhere}
+.match span:first-child{text-align:right}
+.match span:last-child{text-align:left}
+.notice{padding:12px;border-radius:9px;margin:12px 0;overflow-wrap:anywhere}
+footer{padding:22px;color:#a9c5b8;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+<h1>🟢 NFTA OFFICIAL</h1>
+<small>NEW FANTASY LEAGUE · 새로운 환상팀대결</small>
+</header>
+
+<nav>
+<button class="active" data-page="home">홈</button>
+<button data-page="news">리그 뉴스</button>
+<button data-page="fixtures">경기 일정·결과</button>
+<button data-page="clubs">구단</button>
+<button data-page="portal">구단 포털</button>
+</nav>
+
+<main>
+<section id="home" class="active">
+<div class="card">
+<p>OFFICIAL LEAGUE</p>
+<h2>뉴판타지리그</h2>
+<p class="muted">경기 일정, 구단 정보와 선수 등록을 확인하세요.</p>
+<button class="primary" onclick="showPage('fixtures')">경기 일정 보기</button>
+</div>
+<div class="card"><h3>리그 안내</h3><p>16개 구단 · 15라운드</p></div>
+</section>
+
+<section id="news">
+<h2>리그 뉴스</h2>
+<div class="card">
+<p>뉴스 등록 기능은 데이터베이스의 뉴스 테이블 연결 후 사용할 수 있습니다.</p>
+<p class="muted">아래 구단 포털에서 선수 등록을 신청할 수 있습니다.</p>
+</div>
+</section>
+
+<section id="fixtures">
+<h2>경기 일정</h2>
+<label>라운드 선택
+<select id="roundFilter"><option value="all">전체 라운드</option></select>
+</label>
+<div id="fixtureList"></div>
+</section>
+
+<section id="clubs">
+<h2>구단</h2>
+<div id="clubList"></div>
+</section>
+
+<section id="portal">
+<h2>구단 포털 · 선수 등록 신청</h2>
+<div class="card">
+<p class="muted">선수 등록은 Supabase RPC에 연결해 처리합니다. 구단 코드는 인증에 사용되므로 안전하게 관리하세요.</p>
+<form id="playerForm">
+<label>구단 코드
+<input id="teamCode" type="password" autocomplete="off" required>
+</label>
+<label>구단명
+<select id="teamName" required></select>
+</label>
+<label>선수 이름
+<input id="playerName" required maxlength="80">
+</label>
+<label>포지션
+<select id="position" required>
+<option value="">선택</option>
+<option>GK</option><option>DF</option><option>MF</option><option>FW</option>
+</select>
+</label>
+<label>등번호
+<input id="number" type="number" min="1" max="99">
+</label>
+<label>국적
+<input id="nationality" maxlength="60">
+</label>
+<label>나이
+<input id="age" type="number" min="15" max="60">
+</label>
+<label>추가 메모
+<textarea id="notes" rows="3" maxlength="500"></textarea>
+</label>
+<button class="primary" id="submitBtn" type="submit">선수 등록 신청</button>
+<div id="formMessage" class="notice" role="status" aria-live="polite" hidden></div>
+</form>
+</div>
+</section>
+</main>
+
+<footer>NFTA OFFICIAL · New Fantasy League</footer>
+
+<script>
+/*
+  Supabase 프로젝트 URL과 공개 anon/publishable 키를 입력하세요.
+  service_role 또는 secret 키는 절대로 여기에 넣지 마세요.
+*/
+const SUPABASE_URL = "https://itytyqeemfbgfcaqqyoq.supabase.co";
+const SUPABASE_ANON_KEY = "여기에_Supabase_공개_키_입력";
+
+const teams = [
+"FC CATALUNA","TWICE FC","FC BARCELOONA","ONLY REDS FC",
+"엘버턴FC","FC MUNCHEN","FC RIVRE","문덜랜드AFC",
+"FC DELPIO","VANTERA ROVERS","맨체스터 시티(진)","진석FC",
+"말리크 산초FC","아스트라FC","DOOMS","Les Diables U.T.D."
+];
+
+/* 16개 팀의 15라운드 대진표를 생성합니다. */
+function makeRounds(list){
+ const arr=list.slice();
+ const result=[];
+ for(let r=0;r<list.length-1;r++){
+  const games=[];
+  for(let i=0;i<list.length/2;i++){
+   const a=arr[i], b=arr[list.length-1-i];
+   games.push(r%2===0?[a,b]:[b,a]);
+  }
+  result.push(games);
+  const fixed=arr[0];
+  const rest=arr.slice(1);
+  rest.unshift(rest.pop());
+  arr.splice(0,arr.length,fixed,...rest);
+ }
+ return result;
+}
+const rounds=makeRounds(teams);
+const filter=document.getElementById("roundFilter");
+const fixtureList=document.getElementById("fixtureList");
+
+for(let i=1;i<=15;i++)filter.add(new Option(i+"R",String(i)));
+
+function renderFixtures(){
+ const chosen=filter.value;
+ fixtureList.replaceChildren();
+ rounds.forEach((games,i)=>{
+  if(chosen!=="all"&&chosen!==String(i+1))return;
+  const heading=document.createElement("h3");
+  heading.textContent=(i+1)+"R";
+  fixtureList.appendChild(heading);
+  games.forEach(pair=>{
+   const card=document.createElement("div");
+   card.className="card";
+   const row=document.createElement("div");
+   row.className="match";
+   const home=document.createElement("span");
+   const vs=document.createElement("b");
+   const away=document.createElement("span");
+   home.textContent=pair[0];vs.textContent="VS";away.textContent=pair[1];
+   row.append(home,vs,away);
+   card.appendChild(row);
+   fixtureList.appendChild(card);
+  });
+ });
+}
+filter.addEventListener("change",renderFixtures);
+renderFixtures();
+
+const teamSelect=document.getElementById("teamName");
+teams.forEach(team=>teamSelect.add(new Option(team,team)));
+const clubList=document.getElementById("clubList");
+teams.forEach(team=>{
+ const card=document.createElement("div");
+ card.className="card";
+ const title=document.createElement("strong");
+ title.textContent=team;
+ const desc=document.createElement("p");
+ desc.className="muted";
+ desc.textContent="선수 명단은 데이터베이스 연결 후 표시됩니다.";
+ card.append(title,desc);
+ clubList.appendChild(card);
+});
+
+function showPage(id){
+ document.querySelectorAll("main section").forEach(s=>
+  s.classList.toggle("active",s.id===id));
+ document.querySelectorAll("nav button").forEach(b=>
+  b.classList.toggle("active",b.dataset.page===id));
+}
+document.querySelectorAll("nav button").forEach(b=>
+ b.addEventListener("click",()=>showPage(b.dataset.page)));
+
+const form=document.getElementById("playerForm");
+const submitBtn=document.getElementById("submitBtn");
+const message=document.getElementById("formMessage");
+let submitting=false;
+
+function showMessage(text,success=false){
+ message.hidden=false;
+ message.textContent=text;
+ message.style.background=success?"#16452f":"#482a2a";
+}
+
+form.addEventListener("submit",async event=>{
+ event.preventDefault();
+ if(submitting)return;
+
+ if(!SUPABASE_ANON_KEY ||
+    SUPABASE_ANON_KEY==="여기에_Supabase_공개_키_입력"){
+  showMessage("Supabase 공개 키를 먼저 설정해야 신청할 수 있습니다.");
+  return;
+ }
+
+ submitting=true;
+ submitBtn.disabled=true;
+ submitBtn.textContent="신청 처리 중...";
+ message.hidden=true;
+
+ try{
+  const body={
+   p_code:document.getElementById("teamCode").value.trim(),
+   p_player_name:document.getElementById("playerName").value.trim(),
+   p_position:document.getElementById("position").value,
+   p_number:document.getElementById("number").value?
+    Number(document.getElementById("number").value):null,
+   p_nationality:document.getElementById("nationality").value.trim()||null,
+   p_age:document.getElementById("age").value?
+    Number(document.getElementById("age").value):null,
+   p_notes:[
+    "구단: "+teamSelect.value,
+    document.getElementById("notes").value.trim()
+   ].filter(Boolean).join(" / ")||null
+  };
+
+  const response=await fetch(
+   SUPABASE_URL+"/rest/v1/rpc/nfta_team_register_player",
+   {
+    method:"POST",
+    headers:{
+     "Content-Type":"application/json",
+     "apikey":SUPABASE_ANON_KEY,
+     "Authorization":"Bearer "+SUPABASE_ANON_KEY
+    },
+    body:JSON.stringify(body)
+   }
+  );
+
+  if(!response.ok){
+   const detail=await response.text();
+   console.error("등록 실패:",response.status,detail);
+   showMessage("신청에 실패했어요. 구단 코드와 데이터베이스 설정을 확인해 주세요. 오류 코드: "+response.status);
+   return;
+  }
+
+  showMessage("신청 완료! 관리자 검토 후 반영됩니다.",true);
+  form.reset();
+
+ }catch(error){
+  console.error(error);
+  showMessage("서버에 연결하지 못했어요. 인터넷 연결을 확인한 뒤 다시 시도해 주세요.");
+ }finally{
+  submitting=false;
+  submitBtn.disabled=false;
+  submitBtn.textContent="선수 등록 신청";
+ }
+});
+</script>
+</body>
+</html>
