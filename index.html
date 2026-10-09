@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NFTA OFFICIAL</title>
+<style>
+:root{--bg:#061b16;--panel:#102b23;--line:#285344;--green:#79edb2;--text:#f2fff8;--muted:#a9c5b8}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at top,#123a2d,var(--bg) 60%);color:var(--text);font-family:Arial,sans-serif}
+header{padding:22px 16px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{border:3px solid var(--green);border-radius:18px;padding:13px;color:var(--green);font-weight:bold;font-size:22px}
+h1{font-size:25px;margin:0 0 5px}
+small,.muted{color:var(--muted)}
+nav{display:flex;overflow-x:auto;gap:8px;padding:14px}
+nav button,.btn{background:var(--panel);color:var(--text);border:1px solid var(--line);padding:12px 16px;border-radius:12px;font-size:15px;white-space:nowrap}
+nav button.active,.btn.primary{background:var(--green);color:#062218;font-weight:bold}
+main{padding:10px 16px 40px;max-width:900px;margin:auto}
+section{display:none}
+section.active{display:block}
+h2{font-size:23px}
+.card{background:rgba(16,43,35,.92);border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0}
+input,textarea,select{width:100%;padding:13px;margin:7px 0 14px;border-radius:10px;border:1px solid var(--line);background:#061c16;color:white;font-size:16px}
+.match{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:13px 0;border-bottom:1px solid var(--line)}
+.match span{text-align:center;flex:1}
+.tag{color:var(--green);font-size:13px}
+footer{padding:25px 16px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><div class="logo">NF</div><div><h1>NFTA OFFICIAL</h1><small>NEW FANTASY LEAGUE</small></div></div>
+</header>
+<nav id="nav">
+ <button class="active" data-page="home">홈</button>
+ <button data-page="news">리그 뉴스</button>
+ <button data-page="fixtures">경기 일정·결과</button>
+ <button data-page="clubs">구단</button>
+ <button data-page="portal">구단 포털</button>
+</nav>
+<main>
+<section id="home" class="active">
+ <h2>새로운 환상팀대결</h2>
+ <div class="card"><div class="tag">OFFICIAL LEAGUE</div><h2>뉴판타지리그</h2><p class="muted">경기 일정과 결과, 구단 소식 및 선수 명단을 확인하세요.</p><button class="btn primary" onclick="showPage('fixtures')">경기 일정 보기</button></div>
+ <div class="card"><h3>리그 안내</h3><p>총 16개 구단 · 15라운드</p><p class="muted">경기 일정은 관리자 등록 후 표시됩니다.</p></div>
+</section>
+<section id="news">
+ <h2>리그 뉴스</h2><div id="newsList"><div class="card muted">등록된 뉴스가 없습니다.</div></div>
+</section>
+<section id="fixtures">
+ <h2>경기 일정 · 결과</h2>
+ <label for="roundFilter">라운드 선택</label>
+ <select id="roundFilter"><option value="all">전체 라운드</option></select>
+ <div id="fixtureList"></div>
+</section>
+<section id="clubs">
+ <h2>구단</h2><p class="muted">구단을 선택하면 등록된 선수 명단을 볼 수 있습니다.</p>
+ <div id="clubList"></div>
+</section>
+<section id="portal">
+ <h2>구단 포털</h2>
+ <div class="card"><p class="muted">선수 등록과 뉴스 작성은 관리자·구단 인증 및 데이터베이스 연결이 필요합니다.</p>
+ <p>기존 등록 화면은 실제 저장 기능을 연결한 뒤 활성화됩니다.</p></div>
+</section>
+</main>
+<footer>NFTA OFFICIAL · New Fantasy League<br>구단 코드는 비밀번호처럼 안전하게 관리하세요.</footer>
+<script>
+const rounds = [
+[
+["FC CATALUNA","TWICE FC"],["FC BARCELOONA","ONLY REDS FC"],["엘버턴FC","FC MUNCHEN"],["FC RIVRE","문덜랜드AFC"],["FC DELPIO","VANTERA ROVERS"],["맨체스터 시티(진)","진석FC"],["말리크 산초FC","아스트라FC"],["DOOMS","Les Diables U.T.D."]
+],
+[
+["FC CATALUNA","FC MUNCHEN"],["TWICE FC","문덜랜드AFC"],["ONLY REDS FC","VANTERA ROVERS"],["FC BARCELOONA","진석FC"],["엘버턴FC","아스트라FC"],["FC RIVRE","Les Diables U.T.D."],["FC DELPIO","DOOMS"],["맨체스터 시티(진)","말리크 산초FC"]
+],
+[
+["FC CATALUNA","문덜랜드AFC"],["FC MUNCHEN","VANTERA ROVERS"],["TWICE FC","진석FC"],["ONLY REDS FC","아스트라FC"],["FC BARCELOONA","Les Diables U.T.D."],["엘버턴FC","DOOMS"],["FC RIVRE","말리크 산초FC"],["FC DELPIO","맨체스터 시티(진)"]
+],
+[
+["FC CATALUNA","VANTERA ROVERS"],["문덜랜드AFC","진석FC"],["FC MUNCHEN","아스트라FC"],["TWICE FC","Les Diables U.T.D."],["ONLY REDS FC","DOOMS"],["FC BARCELOONA","말리크 산초FC"],["엘버턴FC","맨체스터 시티(진)"],["FC RIVRE","FC DELPIO"]
+],
+[
+["FC CATALUNA","진석FC"],["VANTERA ROVERS","아스트라FC"],["문덜랜드AFC","Les Diables U.T.D."],["FC MUNCHEN","DOOMS"],["TWICE FC","말리크 산초FC"],["ONLY REDS FC","맨체스터 시티(진)"],["FC BARCELOONA","FC DELPIO"],["엘버턴FC","FC RIVRE"]
+],
+[
+["FC CATALUNA","아스트라FC"],["진석FC","Les Diables U.T.D."],["VANTERA ROVERS","DOOMS"],["문덜랜드AFC","말리크 산초FC"],["FC MUNCHEN","맨체스터 시티(진)"],["TWICE FC","FC DELPIO"],["ONLY REDS FC","FC RIVRE"],["FC BARCELOONA","엘버턴FC"]
+],
+[
+["FC CATALUNA","Les Diables U.T.D."],["아스트라FC","DOOMS"],["진석FC","말리크 산초FC"],["VANTERA ROVERS","맨체스터 시티(진)"],["문덜랜드AFC","FC DELPIO"],["FC MUNCHEN","FC RIVRE"],["TWICE FC","엘버턴FC"],["ONLY REDS FC","FC BARCELOONA"]
+],
+[
+["FC CATALUNA","DOOMS"],["Les Diables U.T.D.","말리크 산초FC"],["아스트라FC","맨체스터 시티(진)"],["진석FC","FC DELPIO"],["VANTERA ROVERS","FC RIVRE"],["문덜랜드AFC","엘버턴FC"],["FC MUNCHEN","FC BARCELOONA"],["TWICE FC","ONLY REDS FC"]
+],
+[
+["FC CATALUNA","말리크 산초FC"],["DOOMS","맨체스터 시티(진)"],["Les Diables U.T.D.","FC DELPIO"],["아스트라FC","FC RIVRE"],["진석FC","엘버턴FC"],["VANTERA ROVERS","FC BARCELOONA"],["문덜랜드AFC","ONLY REDS FC"],["FC MUNCHEN","TWICE FC"]
+],
+[
+["FC CATALUNA","맨체스터 시티(진)"],["말리크 산초FC","FC DELPIO"],["DOOMS","FC RIVRE"],["Les Diables U.T.D.","엘버턴FC"],["아스트라FC","FC BARCELOONA"],["진석FC","ONLY REDS FC"],["VANTERA ROVERS","TWICE FC"],["문덜랜드AFC","FC MUNCHEN"]
+],
+[
+["FC CATALUNA","FC DELPIO"],["맨체스터 시티(진)","FC RIVRE"],["말리크 산초FC","엘버턴FC"],["DOOMS","FC BARCELOONA"],["Les Diables U.T.D.","ONLY REDS FC"],["아스트라FC","TWICE FC"],["진석FC","FC MUNCHEN"],["VANTERA ROVERS","문덜랜드AFC"]
+],
+[
+["FC CATALUNA","FC RIVRE"],["FC DELPIO","엘버턴FC"],["맨체스터 시티(진)","FC BARCELOONA"],["말리크 산초FC","ONLY REDS FC"],["DOOMS","TWICE FC"],["Les Diables U.T.D.","FC MUNCHEN"],["아스트라FC","문덜랜드AFC"],["진석FC","VANTERA ROVERS"]
+],
+[
+["FC CATALUNA","엘버턴FC"],["FC RIVRE","FC BARCELOONA"],["FC DELPIO","ONLY REDS FC"],["맨체스터 시티(진)","TWICE FC"],["말리크 산초FC","FC MUNCHEN"],["DOOMS","문덜랜드AFC"],["Les Diables U.T.D.","VANTERA ROVERS"],["아스트라FC","진석FC"]
+],
+[
+["FC CATALUNA","FC BARCELOONA"],["엘버턴FC","ONLY REDS FC"],["FC RIVRE","TWICE FC"],["FC DELPIO","FC MUNCHEN"],["맨체스터 시티(진)","문덜랜드AFC"],["말리크 산초FC","VANTERA ROVERS"],["DOOMS","진석FC"],["Les Diables U.T.D.","아스트라FC"]
+],
+[
+["FC CATALUNA","엘버턴FC"],["FC BARCELOONA","FC RIVRE"],["ONLY REDS FC","FC DELPIO"],["TWICE FC","맨체스터 시티(진)"],["FC MUNCHEN","말리크 산초FC"],["문덜랜드AFC","DOOMS"],["VANTERA ROVERS","Les Diables U.T.D."],["진석FC","아스트라FC"]
+]
+];
+const filter=document.getElementById("roundFilter");
+rounds.forEach((_,i)=>filter.add(new Option((i+1)+"R",String(i+1))));
+function renderFixtures(){
+ const selected=filter.value;
+ const items=[];
+ rounds.forEach((games,i)=>{
+  if(selected!=="all"&&selected!==String(i+1))return;
+  games.forEach(pair=>items.push({round:i+1,home:pair[0],away:pair[1]}));
+ });
+ document.getElementById("fixtureList").innerHTML=items.map(m=>`<div class="card"><div class="tag">${m.round}R · 일정</div><div class="match"><span>${m.home}</span><b>VS</b><span>${m.away}</span></div></div>`).join("");
+}
+filter.addEventListener("change",renderFixtures);
+function showPage(id){
+ document.querySelectorAll("main section").forEach(s=>s.classList.toggle("active",s.id===id));
+ document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===id));
+}
+document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.page)));
+renderFixtures();
+</script>
+</body>
+</html>
