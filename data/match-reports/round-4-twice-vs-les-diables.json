@@ -1,0 +1,65 @@
+{
+  "competition": "뉴판타지리그",
+  "round": 4,
+  "homeTeam": "TWICE FC",
+  "awayTeam": "Les Diables U.T.D.",
+  "score": {
+    "home": 0,
+    "away": 1
+  },
+  "status": "finished",
+  "goalScorers": [
+    {
+      "minute": 79,
+      "player": "Charles De Ketelaere",
+      "team": "Les Diables U.T.D.",
+      "method": "헤더"
+    }
+  ],
+  "assists": [
+    {
+      "minute": 79,
+      "player": "Mika Godts",
+      "team": "Les Diables U.T.D."
+    }
+  ],
+  "goalkeeperSaves": [
+    {
+      "player": "김준홍",
+      "team": "TWICE",
+      "saves": 3
+    },
+    {
+      "player": "Mike Penders",
+      "team": "Les Diables U.T.D.",
+      "saves": 4
+    }
+  ],
+  "manOfTheMatch": {
+    "player": "Jérémy Doku",
+    "team": "Les Diables U.T.D."
+  },
+  "substitutions": [
+    {
+      "minute": 46,
+      "team": "Les Diables U.T.D.",
+      "playerIn": "Mika Godts",
+      "playerOut": "Julián Alvarez"
+    },
+    {
+      "minute": 55,
+      "team": "Les Diables U.T.D.",
+      "playerIn": "Hans Vanaken",
+      "playerOut": "Roméo Lavia"
+    },
+    {
+      "minute": 70,
+      "team": "Les Diables U.T.D.",
+      "playerIn": "Timothy Castagne",
+      "playerOut": "Alexis Saelemaekers"
+    }
+  ],
+  "narrative": "79분 Godts 크로스를 De Ketelaere가 헤더로 마무리. 선수비 후역습으로 1-0 승리.",
+  "notes": "가상 시뮬레이션 결과. 골키퍼 선방 기록은 시뮬레이션 수치.",
+  "createdAt": "2026-10-12"
+}
