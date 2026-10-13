@@ -1,0 +1,27 @@
+{
+  "club": {
+    "name": "Celtic Football Club",
+    "shortName": "Celtic FC",
+    "founded": 1888,
+    "nickname": "The Hoops",
+    "city": "Glasgow",
+    "country": "Scotland",
+    "homeGround": "Celtic Park",
+    "recordStatus": "verified-basics",
+    "sourceUrl": "https://www.celticfc.com/",
+    "checkedAt": "2026-10-14"
+  },
+  "seasons": [],
+  "honours": [],
+  "players": [],
+  "matches": [],
+  "sources": [
+    {
+      "label": "Celtic FC official website",
+      "url": "https://www.celticfc.com/",
+      "checkedAt": "2026-10-14",
+      "scope": "Official club news and reference starting point"
+    }
+  ],
+  "notes": "Starter dataset only. Populate season, honour, player and match records from verified sources before treating figures as official."
+}
