@@ -1,3 +1,4 @@
+import "./cloud.js";
 const STORE_KEY = "super-league-rebuild-v1";
 const blankData = () => ({ teams: [], players: [], staff: [], transfers: [], matches: [], news: [] });
 let data = loadData();
