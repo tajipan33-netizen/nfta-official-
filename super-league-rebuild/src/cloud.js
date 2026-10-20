@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
 const STORE_KEY = "super-league-rebuild-v1";
+const OWNER_KEY = "super-league-rebuild-owner-v1";
 const url = import.meta.env.VITE_SUPABASE_URL;
 const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 let supabase = null;
@@ -8,6 +9,7 @@ let currentUser = null;
 let saveReady = false;
 let saveTimer = null;
 let syncBusy = false;
+let pendingState = null;
 
 const status = (message, online = false) => {
   const el = document.querySelector("#cloud-status");
@@ -79,10 +81,11 @@ async function loadCloudState(user) {
     message("클라우드 데이터를 읽지 못했어: "+error.message,true);
     return;
   }
+  const previousOwner=localStorage.getItem(OWNER_KEY);
   if(data?.state) {
     window.dispatchEvent(new CustomEvent("sl:cloud-loaded",{detail:data.state}));
   } else {
-    const local=readLocalState();
+    const local=previousOwner && previousOwner!==user.id ? {} : readLocalState();
     const state={teams:[],players:[],staff:[],transfers:[],matches:[],news:[],...local};
     const {error:saveError}=await supabase.from("super_league_state").upsert({user_id:user.id,state,updated_at:new Date().toISOString()},{onConflict:"user_id"});
     if(saveError) {
@@ -92,19 +95,22 @@ async function loadCloudState(user) {
     }
     window.dispatchEvent(new CustomEvent("sl:cloud-loaded",{detail:state}));
   }
+  localStorage.setItem(OWNER_KEY,user.id);
   saveReady=true;
   status("CLOUD SAVED",true);
   const dialog=document.querySelector("#cloud-auth");
   if(dialog?.open) dialog.close();
 }
 async function persist(state) {
-  if(!supabase||!currentUser||!saveReady||syncBusy) return;
+  if(!supabase||!currentUser||!saveReady) return;
+  if(syncBusy){ pendingState=state; return; }
   syncBusy=true;
   status("SAVING CLOUD…");
   const {error}=await supabase.from("super_league_state").upsert({user_id:currentUser.id,state,updated_at:new Date().toISOString()},{onConflict:"user_id"});
   syncBusy=false;
   if(error) status("SAVE FAILED");
   else status("CLOUD SAVED",true);
+  if(pendingState){ const next=pendingState; pendingState=null; await persist(next); }
 }
 function init() {
   const account=document.querySelector("#cloud-account");
