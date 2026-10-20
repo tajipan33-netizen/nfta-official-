@@ -35,6 +35,7 @@ function showAuth() {
       </form>`;
     document.body.append(dialog);
     dialog.querySelector("#cloud-close").addEventListener("click",()=>dialog.close());
+    dialog.querySelector("#cloud-signout").addEventListener("click",async()=>{ if(supabase) await supabase.auth.signOut(); dialog.close(); });
     dialog.querySelector("#cloud-signup").addEventListener("click", async ()=>{
       const form=dialog.querySelector("#cloud-auth-form");
       if(!form.reportValidity()) return;
@@ -108,10 +109,6 @@ async function persist(state) {
 function init() {
   const account=document.querySelector("#cloud-account");
   account?.addEventListener("click",showAuth);
-  document.querySelector("#cloud-signout")?.addEventListener("click",async()=>{
-    await supabase.auth.signOut();
-    document.querySelector("#cloud-auth")?.close();
-  });
   window.addEventListener("sl:save",e=>{
     if(!currentUser||!saveReady) return;
     clearTimeout(saveTimer);
@@ -139,7 +136,6 @@ function init() {
       }
     },0);
   });
-  document.querySelector("#cloud-signout")?.addEventListener("click",async()=>{await supabase.auth.signOut();});
   status("CLOUD LOGIN REQUIRED");
   account && (account.textContent="클라우드 로그인");
   showAuth();
