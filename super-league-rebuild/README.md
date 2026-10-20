@@ -1,13 +1,21 @@
-# SUPER LEAGUE — Fresh Rebuild
+# SUPER LEAGUE — Independent Rebuild
 
-This folder is the isolated start of a new SUPER LEAGUE app. It does not replace or delete existing application files.
+A standalone Vite app scaffold stored in its own folder so existing NFTA/SUPER LEAGUE files remain untouched.
 
-## Initial scope
-- Independent app shell and styling
-- Teams and squads
-- Player photos, youth players, coaches and managers
-- Transfer market with validation
-- Persistent storage integration prepared for a dedicated Supabase project
+## Current features
+- Responsive dark green management dashboard
+- Teams, players, youth/coaches/managers, transfers, match notes, news management
+- Add/edit/delete/search for management records
+- Player, staff and crest image URLs
+- Isolated browser storage key (`super-league-rebuild-v1`)
 
-## Safety
-The existing deployment and existing Supabase project are not modified by this scaffold. Configure the new deployment and database independently before migrating any data.
+## Run
+`npm install`
+`npm run dev`
+`npm run build`
+
+## Persistence
+Current MVP uses browser localStorage only. That means data stays in that browser/device and is not synced to another device. Configure a **dedicated Supabase project** before enabling cloud sync. Do not point it at an existing production database until the schema and access policies are reviewed. Never use a Supabase service-role key in client-side variables.
+
+## Vercel
+Set the project root directory to `super-league-rebuild`, framework Vite, build command `npm run build`, output directory `dist`.
