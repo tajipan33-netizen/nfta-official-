@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#07120f" />
+  <meta name="description" content="SUPER LEAGUE — Football management hub" />
+  <title>SUPER LEAGUE | Official Hub</title>
+  <link rel="stylesheet" href="./src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <aside class="sidebar">
+      <a class="brand" href="#"><span class="brand-mark">SL</span><span>SUPER<span class="brand-light">LEAGUE</span><small>OFFICIAL MANAGEMENT</small></span></a>
+      <div class="nav-label">WORKSPACE</div>
+      <nav id="nav">
+        <button class="nav-item active" data-view="overview"><span>◈</span> 대시보드</button>
+        <button class="nav-item" data-view="teams"><span>⚑</span> 팀 관리</button>
+        <button class="nav-item" data-view="players"><span>◎</span> 선수단 관리</button>
+        <button class="nav-item" data-view="staff"><span>♙</span> 유스 · 코치 · 감독</button>
+        <button class="nav-item" data-view="transfers"><span>⇄</span> 이적시장</button>
+        <button class="nav-item" data-view="matches"><span>◷</span> 경기 · 기록</button>
+        <button class="nav-item" data-view="news"><span>▤</span> 뉴스 센터</button>
+      </nav>
+      <div class="sidebar-bottom"><span class="status-dot"></span> 새 프로젝트 · 별도 데이터 공간<small>기존 앱 파일은 변경하지 않음</small></div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><div class="breadcrumbs">SUPER LEAGUE <span>/</span> <b id="crumb">대시보드</b></div><div class="top-actions"><span class="online"><i></i> WORKSPACE READY</span><button class="avatar" title="사용자">SL</button></div></header>
+      <section class="hero"><div><div class="eyebrow"><span></span> THE NEXT CHAPTER STARTS HERE</div><h1 id="hero-title">리그 운영을<br/><em>새롭게 시작하다.</em></h1><p id="hero-desc">팀부터 선수 등록, 이적시장까지. 새 SUPER LEAGUE의 운영 공간입니다.</p><div class="hero-actions"><button class="btn primary" data-action="new-player">＋ 선수 등록</button><button class="btn ghost" data-action="new-team">팀 만들기 <span>↗</span></button></div></div><div class="hero-visual"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="hero-ball">SL</div><div class="hero-stamp">SEASON<br/><b>01</b></div></div></section>
+      <section class="stat-grid" id="stats"></section>
+      <section class="content-grid"><article class="panel large"><div class="panel-head"><div><div class="eyebrow">YOUR CLUBHOUSE</div><h2 id="section-title">운영 센터</h2></div><span class="pill">LIVE WORKSPACE</span></div><div id="view-content"></div></article><aside class="panel side-panel"><div class="panel-head"><div><div class="eyebrow">QUICK ACCESS</div><h2>빠른 작업</h2></div></div><button class="quick-link" data-action="new-player"><span class="quick-icon">＋</span><span><b>선수 등록</b><small>프로필과 사진 추가</small></span><span class="chevron">›</span></button><button class="quick-link" data-action="new-team"><span class="quick-icon">⚑</span><span><b>팀 등록</b><small>팀 정보와 엠블럼 설정</small></span><span class="chevron">›</span></button><button class="quick-link" data-action="new-staff"><span class="quick-icon">♙</span><span><b>스태프 등록</b><small>유스 · 코치 · 감독 관리</small></span><span class="chevron">›</span></button><button class="quick-link" data-action="new-transfer"><span class="quick-icon">⇄</span><span><b>이적 기록 추가</b><small>선수 이동과 이적료 기록</small></span><span class="chevron">›</span></button><div class="notice"><span class="notice-mark">i</span><div><b>새 데이터 공간</b><p>이 화면의 데이터는 브라우저에 임시 저장됩니다. 새 Supabase 연결 전까지 다른 기기와 자동 동기화되지 않습니다.</p></div></div></aside></section>
+      <footer>SUPER LEAGUE <span>·</span> INDEPENDENT REBUILD <span>·</span> 2026</footer>
+    </main>
+  </div>
+  <dialog id="editor"><form method="dialog" id="record-form"><div class="modal-head"><div><div class="eyebrow">MANAGEMENT TOOL</div><h2 id="modal-title">새 항목 등록</h2></div><button class="icon-btn" value="cancel" aria-label="닫기">✕</button></div><div id="form-fields"></div><div class="modal-actions"><button class="btn ghost" value="cancel">취소</button><button class="btn primary" id="save-record" value="default">저장하기</button></div></form></dialog>
+  <div id="toast" role="status"></div>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
